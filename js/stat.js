@@ -87,7 +87,7 @@ window.renderStatistics = function (ctx, players, times) {
     ctx.fillText(players[i], CLOUD_X + GAP + (BAR_WIDTH + GAP) * i, CLOUD_HEIGHT - FONT_GAP);
     ctx.fillText(Math.round(times[i]), CLOUD_X + GAP + (BAR_WIDTH + GAP) * i, CLOUD_HEIGHT - GAP + playersBarHeight);
   };
-  for (var i = 1; i < players.length; i++) {
+  for (var i = 0; i < players.length; i++) {
     renderPlayerScore(players[i], times[i]);
   }
 };
