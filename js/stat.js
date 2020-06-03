@@ -12,8 +12,6 @@ var MESSAGE_BASELINE = 'hanging';
 var MESSAGE_X = 125;
 var MESSAGE_Y = 25;
 var MESSAGE_BR = 20;
-var MESSAGE_FIRST = 'Ура вы победили!';
-var MESSAGE_SECOND = 'Список результатов:';
 
 var BAR_MAX_HEIGHT = 150;
 var BAR_WIDTH = 40;
@@ -21,11 +19,20 @@ var BAR_Y = 240;
 var GAP = 50;
 var FONT_GAP = 16;
 
-var COLOR_BLACK = '#000';
-var COLOR_RED = 'rgba(255, 0, 0, 1)';
+var Message = {
+  FIRST: 'Ура вы победили!',
+  SECOND: 'Список результатов:'
+};
 
-var SATURATION_MIN = 1;
-var SATURATION_MAX = 100;
+var Color = {
+  BLACK: '#000',
+  RED: 'rgba(255, 0, 0, 1)'
+};
+
+var Saturation = {
+  MIN: 1,
+  MAX: 100
+};
 
 var renderCloud = function (ctx, x, y, color) {
   ctx.fillStyle = color;
@@ -34,7 +41,7 @@ var renderCloud = function (ctx, x, y, color) {
 
 var renderMessage = function (ctx, text, x, y) {
   ctx.font = MESSAGE_FONT;
-  ctx.fillStyle = COLOR_BLACK;
+  ctx.fillStyle = Color.BLACK;
   ctx.textBaseline = MESSAGE_BASELINE;
   ctx.fillText(text, x, y);
 };
@@ -55,38 +62,32 @@ var getRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-var getRandomBlueColor = function (arr) {
-  var randomBlueColor = [];
-  for (var i = 0; i < arr.length; i++) {
-    var saturation = getRandomNumber(SATURATION_MIN, SATURATION_MAX);
-    randomBlueColor[i] = 'hsl(240,' + saturation + '%' + ', 50%)';
-  }
+var getRandomBlueColor = function () {
+  var saturation = getRandomNumber(Saturation.MIN, Saturation.MAX);
+  var randomBlueColor = 'hsl(240,' + saturation + '%' + ', 50%)';
   return randomBlueColor;
 };
 
-var getPlayersColor = function (name) {
-  var playersColor = getRandomBlueColor();
-  if (name === 'Вы') {
-    playersColor = COLOR_RED;
-  }
-  return playersColor;
+var getPlayerColor = function (name) {
+  return name === 'Вы' ? Color.RED : getRandomBlueColor();
 };
 
 window.renderStatistics = function (ctx, players, times) {
   renderCloud(ctx, SHADOW_X, SHADOW_Y, 'rgba(0, 0, 0, 0.7)');
   renderCloud(ctx, CLOUD_X, CLOUD_Y, '#fff');
-  renderMessage(ctx, MESSAGE_FIRST, MESSAGE_X, MESSAGE_Y);
-  renderMessage(ctx, MESSAGE_SECOND, MESSAGE_X, MESSAGE_Y + MESSAGE_BR);
+  renderMessage(ctx, Message.FIRST, MESSAGE_X, MESSAGE_Y);
+  renderMessage(ctx, Message.SECOND, MESSAGE_X, MESSAGE_Y + MESSAGE_BR);
 
   var maxTime = getMaxElement(times);
-  var playersColor = getPlayersColor(players);
-
-  for (var i = 0; i < players.length; i++) {
+  var renderPlayerScore = function () {
     var playersBarHeight = (-BAR_MAX_HEIGHT * times[i]) / maxTime;
-    ctx.fillStyle = getPlayersColor(playersColor[i]);
+    ctx.fillStyle = getPlayerColor(players[i]);
     ctx.fillRect(CLOUD_X + GAP + (BAR_WIDTH + GAP) * i, BAR_Y, BAR_WIDTH, playersBarHeight);
-    ctx.fillStyle = COLOR_BLACK;
+    ctx.fillStyle = Color.BLACK;
     ctx.fillText(players[i], CLOUD_X + GAP + (BAR_WIDTH + GAP) * i, CLOUD_HEIGHT - FONT_GAP);
     ctx.fillText(Math.round(times[i]), CLOUD_X + GAP + (BAR_WIDTH + GAP) * i, CLOUD_HEIGHT - GAP + playersBarHeight);
+  };
+  for (var i = 0; i < players.length; i++) {
+    renderPlayerScore(players[i], times[i]);
   }
 };
